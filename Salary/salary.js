@@ -1,47 +1,40 @@
-    
-    function netSalaryCalculator() {
-    const basicSalary = parseFloat(prompt("Enter your basic salary:"));
-    const benefits = parseFloat(prompt("Enter your benefits:"));
-    
-    if (isNaN(basicSalary) || isNaN(benefits)) {
-    console.log("Invalid input. Please enter numeric values.");
-    return;
-    }
-    
+const readline = require('readline-sync');
+
+function calculateNetSalary(basicSalary, benefits) {
+    const TAX_RATE = 0.15;
+    const NHIF_RATE = 0.025;
+    const NSSF_RATE = 0.06;
+
+    // Calculate the gross salary
     const grossSalary = basicSalary + benefits;
-    
-    
-    let tax = 0;
-    if (grossSalary <= 24000) tax = grossSalary * 0.1;
-    else if (grossSalary <= 32333) tax = grossSalary * 0.25;
-    else tax = grossSalary * 0.3;
-    
-    
-    
-    const nhifRates = [
-    { min: 0, max: 5999, deduction: 150 },
-    { min: 6000, max: 7999, deduction: 300 },
-    { min: 8000, max: 11999, deduction: 400 },
-    { min: 12000, max: 14999, deduction: 500 },
-    { min: 15000, max: 19999, deduction: 600 },
-    { min: 20000, max: 24999, deduction: 750 },
-    { min: 25000, max: 29999, deduction: 850 },
-    { min: 30000, max: 34999, deduction: 900 },
-    { min: 35000, max: 39999, deduction: 950 },
-    { min: 40000, max: Infinity, deduction: 1000 }
-    ];
-    const nhifDeduction = nhifRates.find(rate => grossSalary >= rate.min && grossSalary <= rate.max).deduction;
-    
-   
-    const nssfDeduction = Math.min(grossSalary * 0.06, 1800);
-    
-    const netSalary = grossSalary - tax - nhifDeduction - nssfDeduction;
-    
-    console.log(`Gross Salary: ${grossSalary}`);
-    console.log(`Tax: ${tax}`);
-    console.log(`NHIF Deduction: ${nhifDeduction}`);
-    console.log(`NSSF Deduction: ${nssfDeduction}`);
-    console.log(`Net Salary: ${netSalary}`);
-    }
-    
-    netSalaryCalculator();
+
+    // Calculate deductions
+    const taxDeduction = grossSalary * TAX_RATE;
+    const nhifDeduction = grossSalary * NHIF_RATE;
+    const nssfDeduction = grossSalary * NSSF_RATE;
+
+    // Calculate net salary
+    const netSalary = grossSalary - taxDeduction - nhifDeduction - nssfDeduction;
+
+    // Return the results with two decimal points
+    return {
+        grossSalary: grossSalary.toFixed(2),
+        taxDeduction: taxDeduction.toFixed(2),
+        nhifDeduction: nhifDeduction.toFixed(2),
+        nssfDeduction: nssfDeduction.toFixed(2),
+        netSalary: netSalary.toFixed(2)
+    };
+}
+
+// Reading user input using readline-sync
+const basicSalary = parseFloat(readline.question("Enter your basic salary: "));
+const benefits = parseFloat(readline.question("Enter your benefits: "));
+
+// Calculate net salary and output the results
+const salaryDetails = calculateNetSalary(basicSalary, benefits);
+
+console.log(`Gross Salary: ${salaryDetails.grossSalary}`);
+console.log(`Tax Deduction: ${salaryDetails.taxDeduction}`);
+console.log(`NHIF Deduction: ${salaryDetails.nhifDeduction}`);
+console.log(`NSSF Deduction: ${salaryDetails.nssfDeduction}`);
+console.log(`Net Salary: ${salaryDetails.netSalary}`);
